@@ -15,7 +15,7 @@ namespace BarcodeExample.Controllers
     public class BarcodeController : ControllerBase
     {
         [HttpGet]
-        public FileStreamResult Generate()
+        public async Task<IActionResult> Generate()
         {
             string jwt = Utils.GetJwt(Request);
             string basePath = "https://api-qa.aspose.cloud";
@@ -25,14 +25,15 @@ namespace BarcodeExample.Controllers
             conf.JwtToken = jwt;
             BarCodeApi api = new BarCodeApi(conf);
 
-            using (Stream response = api.BarCodeGetBarCodeGenerate(new BarCodeGetBarCodeGenerateRequest("Sample text", "Code128", "png")))
+            string tmp = Path.GetTempFileName();
+            using (Stream response = api.BarCodeGetBarCodeGenerate(new BarCodeGetBarCodeGenerateRequest("Sample text", "Code128", "jpg")))
+            using (FileStream stream = System.IO.File.Create(tmp))
             {
-                using (FileStream stream = System.IO.File.Create("barcode.png"))
-                {
-                    response.CopyTo(stream);
-                    return new FileStreamResult(stream, "application/octet-stream");
-                }
+                response.CopyTo(stream);
             }
+
+            FileStream res = new FileStream(tmp, FileMode.Open);
+            return File(res, "application/octet-stream", "barcode.jpg");
         }
     }
 }

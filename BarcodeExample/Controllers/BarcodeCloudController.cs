@@ -18,13 +18,18 @@ namespace BarcodeExample.Controllers
         private string AppKey = "ee155a541298b173c93d26497c70c0f8";
 
         [HttpGet]
-        public FileStreamResult Generate()
+        public async Task<IActionResult> Generate()
         {
             BarCodeApi api = new BarCodeApi(AppKey, AppSid);
-            Stream response = api.BarCodeGetBarCodeGenerate(new BarCodeGetBarCodeGenerateRequest("Sample text", "Code128", "png"));
-            FileStream stream = System.IO.File.Create("barcodeCloud.png");
-            response.CopyTo(stream);
-            return new FileStreamResult(stream, "application/octet-stream");
+            string tmp = Path.GetTempFileName();
+            using (Stream response = api.BarCodeGetBarCodeGenerate(new BarCodeGetBarCodeGenerateRequest("Sample text", "Code128", "jpg")))
+            using (FileStream stream = System.IO.File.Create(tmp))
+            {
+                response.CopyTo(stream);
+            }
+
+            FileStream res = new FileStream(tmp, FileMode.Open);
+            return File(res, "application/octet-stream", "barcode.jpg");
         }
     }
 }
