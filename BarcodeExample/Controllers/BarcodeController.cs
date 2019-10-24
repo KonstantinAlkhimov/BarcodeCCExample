@@ -23,6 +23,8 @@ namespace BarcodeExample.Controllers
             var conf = new Configuration();
             conf.ApiBaseUrl = basePath;
             conf.JwtToken = jwt;
+            conf.ApiVersion = ApiVersion.V3;
+            conf.AuthType = AuthType.ExternalAuth;
             BarCodeApi api = new BarCodeApi(conf);
 
             string tmp = Path.GetTempFileName();

@@ -6,3 +6,4 @@ deploy.yaml
 devcon.exe
 k8s.barcode.bat
 local.barcode.bat
+Cloudfile
