@@ -21,7 +21,9 @@ namespace BarcodeExample.Controllers
         [HttpGet("{id}")]
         public ActionResult<string> Get(int id)
         {
-            return "value";
+            string jwt = Utils.GetJwt(Request);
+
+            return jwt;
         }
 
         // POST api/values
