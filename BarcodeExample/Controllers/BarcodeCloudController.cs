@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,15 +22,30 @@ namespace BarcodeExample.Controllers
         public async Task<IActionResult> Generate()
         {
             BarCodeApi api = new BarCodeApi(AppKey, AppSid);
+
+            var srcBmp = new System.Drawing.Bitmap("Card.png");
             string tmp = Path.GetTempFileName();
-            using (Stream response = api.BarCodeGetBarCodeGenerate(new BarCodeGetBarCodeGenerateRequest("Sample text", "Code128", "jpg")))
-            using (FileStream stream = System.IO.File.Create(tmp))
+            using (Stream response =
+                api.BarCodeGetBarCodeGenerate(
+                    new BarCodeGetBarCodeGenerateRequest("Hello from conholdate.cloud!", "QR", "png")))
             {
-                response.CopyTo(stream);
+                var qr = new Bitmap(response);
+                var bmp = new Bitmap(srcBmp.Width, srcBmp.Height);
+                using (Graphics graphics = Graphics.FromImage(bmp))
+                {
+                    graphics.DrawImage(srcBmp, 0, 0, srcBmp.Width, srcBmp.Height);
+                    graphics.DrawImage(qr, srcBmp.Width - qr.Width - 10, 10);
+                }
+
+                using (FileStream stream = System.IO.File.Create(tmp))
+                {
+                    bmp.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
+
+                }
             }
 
             FileStream res = new FileStream(tmp, FileMode.Open);
-            return File(res, "application/octet-stream", "barcode.jpg");
+            return File(res, "application/octet-stream", "CardWithQr.png");
         }
     }
 }
