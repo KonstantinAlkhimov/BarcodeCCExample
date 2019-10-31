@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
@@ -40,7 +41,10 @@ namespace BarcodeExample.Controllers
             conf.AuthType = AuthType.ExternalAuth;
             BarCodeApi api = new BarCodeApi(conf);
 
-            var srcBmp = new System.Drawing.Bitmap("Card.png");
+            Assembly myAssembly = Assembly.GetExecutingAssembly();
+            Stream myStream = myAssembly.GetManifestResourceStream("BarcodeExample.Card.png");
+            Bitmap srcBmp = new Bitmap(myStream);
+
             string tmp = Path.GetTempFileName();
             using (Stream response =
                 api.BarCodeGetBarCodeGenerate(
