@@ -28,8 +28,8 @@ namespace BarcodeExample.Controllers
             "tbFs7zhxuilqIiZGGsQfsgPxkoQ99IH6QZEiWvVd5IPFtotZAFp__L9Dyj0nVzGHu9JcjbK-9IR1BIQ" +
             "YvlkVO4jdvCLu1BQ";
 
-        [HttpGet]
-        public IActionResult Generate()
+        [HttpGet("{text}")]
+        public IActionResult Generate(string text)
         {
             string jwt = Utils.GetJwt(Request);
 
@@ -48,7 +48,7 @@ namespace BarcodeExample.Controllers
             string tmp = Path.GetTempFileName();
             using (Stream response =
                 api.BarCodeGetBarCodeGenerate(
-                    new BarCodeGetBarCodeGenerateRequest("Hello from conholdate.cloud!", "QR", "png")))
+                    new BarCodeGetBarCodeGenerateRequest(text, "QR", "png")))
             {
                 var qr = new Bitmap(response);
                 var bmp = new Bitmap(srcBmp.Width, srcBmp.Height);
